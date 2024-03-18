@@ -1,9 +1,10 @@
 import css from './ContactForm.module.css';
 import { Formik, Form, Field, ErrorMessage } from 'formik';
+import { useDispatch } from 'react-redux';
+import { addContact } from '..//../redux/contactsSlice';
 
 import { useId } from 'react';
 import * as Yup from 'yup';
-import { nanoid } from 'nanoid';
 
 const initialValues = {
   contactName: '',
@@ -21,18 +22,20 @@ const ContactSchema = Yup.object().shape({
     .required('Required'),
 });
 
-export default function ContactForm({ onAdd }) {
+export default function ContactForm() {
   const nameFieldId = useId();
   const numberFieldId = useId();
 
-  const handleSubmit = (values, actions) => {
-    onAdd({
-      id: nanoid(),
-      name: values.contactName,
-      number: values.number,
-    });
+  const dispatch = useDispatch();
 
-    console.log(values);
+  const handleSubmit = (values, actions) => {
+    dispatch(
+      addContact({
+        name: values.contactName,
+        number: values.number,
+      })
+    );
+
     actions.resetForm();
   };
 
@@ -60,8 +63,6 @@ export default function ContactForm({ onAdd }) {
             type="tel"
             name="number"
             id={numberFieldId}
-            // pattern="[0-9]{3}-[0-9]{2}-[0-9]{2}"
-            // placeholder="123-45-67"
           />
           <ErrorMessage className={css.error} name="number" as="span" />
         </div>
